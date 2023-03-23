@@ -11,7 +11,7 @@ import raulalbin.prueba.tecnica.data.models.LocationsResponse
 import raulalbin.prueba.tecnica.data.models.TvCharacter
 import javax.inject.Inject
 
-class CharacterRepository @Inject constructor(private val api: RickAndMortyAPI){
+class RickAndMortyRepository @Inject constructor(private val api: RickAndMortyAPI){
 
     suspend fun getCharacters(): CharactersResponse? {
         return withContext(Dispatchers.IO){
@@ -31,6 +31,13 @@ class CharacterRepository @Inject constructor(private val api: RickAndMortyAPI){
     suspend fun getCharacterFromFullURL(url: String): TvCharacter? {
         return withContext(Dispatchers.IO){
             val response = api.getCharacterFromFullURL(url)
+            response.body()
+        }
+    }
+
+    suspend fun searchCharactersByName(name: String): CharactersResponse? {
+        return withContext(Dispatchers.IO){
+            val response = api.getCharactersByName(name)
             response.body()
         }
     }
@@ -56,6 +63,12 @@ class CharacterRepository @Inject constructor(private val api: RickAndMortyAPI){
         }
     }
 
+    suspend fun searchEpisodesByName(name: String): EpisodesResponse? {
+        return withContext(Dispatchers.IO){
+            val response = api.getEpisodesByName(name)
+            response.body()
+        }
+    }
 
     suspend fun getLocations() : LocationsResponse? {
         return withContext(Dispatchers.IO) {
@@ -66,6 +79,12 @@ class CharacterRepository @Inject constructor(private val api: RickAndMortyAPI){
     suspend fun getLocationsFromPagination(url: String): LocationsResponse? {
         return withContext(Dispatchers.IO){
             val response = api.getLocationsPagination(url)
+            response.body()
+        }
+    }
+    suspend fun searchLocationsByName(name: String): LocationsResponse? {
+        return withContext(Dispatchers.IO){
+            val response = api.getLocationsByName(name)
             response.body()
         }
     }

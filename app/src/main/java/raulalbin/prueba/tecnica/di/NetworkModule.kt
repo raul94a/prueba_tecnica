@@ -43,7 +43,7 @@ object NetworkModule {
         val cache = Cache(context.cacheDir,cacheSize )
         val client = OkHttpClient.Builder()
             .cache(cache)
-            .addNetworkInterceptor(provideCacheInterceptor())
+
             .addInterceptor { chain ->
 
                 var request = chain.request()
@@ -62,28 +62,7 @@ object NetworkModule {
         return client
     }
 
-    private fun provideCacheInterceptor(): Interceptor {
-        return Interceptor { chain ->
-            var request: Request = chain.request()
-            val originalResponse: Response = chain.proceed(request)
-            val cacheControl: String? = originalResponse.header("Cache-Control")
-            if (cacheControl == null || cacheControl.contains("no-store") || cacheControl.contains("no-cache") ||
-                cacheControl.contains("must-revalidate") || cacheControl.contains("max-stale=0")
-            ) {
-                val cc = CacheControl.Builder()
-                    .maxStale(1, TimeUnit.DAYS)
-                    .build()
-                request = request.newBuilder()
-                    .removeHeader("Pragma")
-                    .cacheControl(cc)
-                    .build()
-                chain.proceed(request)
-            } else {
-                originalResponse
 
-            }
-        }
-    }
 
 
 

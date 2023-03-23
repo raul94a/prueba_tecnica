@@ -11,7 +11,7 @@ import raulalbin.prueba.tecnica.data.models.Location
 @Dao
 interface LocationDAO {
     @Query("Select * from locations ORDER BY id")
-    fun getLoCATIONS(): Flow<List<Location>>
+    suspend fun  getLocations(): List<Location>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOne(location: Location)

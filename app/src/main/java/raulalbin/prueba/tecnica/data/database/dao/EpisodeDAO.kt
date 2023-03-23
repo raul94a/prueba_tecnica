@@ -11,7 +11,10 @@ import raulalbin.prueba.tecnica.data.models.Episode
 @Dao
 interface EpisodeDAO {
     @Query("Select * from episodes ORDER BY id")
-    fun getEpisodes(): Flow<List<Episode>>
+    suspend fun getEpisodes(): List<Episode>
+
+    @Query("Select * from episodes where url = :url limit 1")
+    suspend fun getEpisodeByUrl(url: String): Episode?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOne(location: Episode)

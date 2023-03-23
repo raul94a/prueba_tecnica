@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import raulalbin.prueba.tecnica.data.database.dao.CharacterDAO
 import raulalbin.prueba.tecnica.data.database.dao.EpisodeDAO

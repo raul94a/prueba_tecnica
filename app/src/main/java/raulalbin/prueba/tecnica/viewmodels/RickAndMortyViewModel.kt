@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import raulalbin.prueba.tecnica.data.database.AppDatabase
 import raulalbin.prueba.tecnica.data.models.*
-import raulalbin.prueba.tecnica.data.repositories.CharacterRepository
+import raulalbin.prueba.tecnica.data.repositories.RickAndMortyRepository
 import javax.inject.Inject
 
 
 @HiltViewModel
-class CharactersViewModel @Inject constructor(
-    private val repository: CharacterRepository,
+class RickAndMortyViewModel @Inject constructor(
+    private val repository: RickAndMortyRepository,
     private val database: AppDatabase
 ) :
     ViewModel() {
@@ -31,7 +31,7 @@ class CharactersViewModel @Inject constructor(
     val locations: StateFlow<LocationsResponse?>
         get() = _locations
 
-    private var _loading = MutableStateFlow<Boolean>(false)
+    private var _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean>
         get() = _loading
 
@@ -58,8 +58,9 @@ class CharactersViewModel @Inject constructor(
         _loading.value = true
         viewModelScope.launch {
             val response = repository.getCharactersFromPagination(characters.value!!.info.next!!)
-            _characters.value = null;
+            _characters.value = null
             if (response != null) {
+                database.characterDao().insertMany(response.results)
                 setFirstEpisodeFromList(response.results)
                 _characters.value = response
 
@@ -78,6 +79,7 @@ class CharactersViewModel @Inject constructor(
             val response = repository.getCharactersFromPagination(characters.value!!.info.prev!!)
 
             if (response != null) {
+                database.characterDao().insertMany(response.results)
                 setFirstEpisodeFromList(response.results)
                 _characters.value = response
 
@@ -87,11 +89,30 @@ class CharactersViewModel @Inject constructor(
 
     }
 
+    fun searchCharacters(name: String){
+        _loading.value = true
+        viewModelScope.launch {
+
+            val response = repository.searchCharactersByName(name)
+            database.characterDao().insertMany(response?.results ?: emptyList())
+            if (response != null) {
+                setFirstEpisodeFromList(response.results)
+                _characters.value = response
+            }
+            _loading.value = false
+        }
+    }
+
     private suspend fun setFirstEpisodeFromList(tvCharacters: List<TvCharacter>) {
         for (item in tvCharacters) {
-            val episode = item.episode[0];
-            val firstEpisode = repository.getEpisode(episode)
-            item.firstEpisode = firstEpisode!!
+            val episodeDB = database.episodeDao().getEpisodeByUrl(item.episode[0])
+            if (episodeDB != null) {
+                item.firstEpisode = episodeDB
+            } else {
+                val episode = item.episode[0]
+                val firstEpisode = repository.getEpisode(episode)
+                item.firstEpisode = firstEpisode!!
+            }
         }
     }
 
@@ -100,6 +121,7 @@ class CharactersViewModel @Inject constructor(
         viewModelScope.launch {
             val response = repository.getEpisodes()
             if (response != null) {
+                database.episodeDao().insertMany(response.results)
                 getCharactersFromEpisodes(response.results)
                 _episodes.value = response
             }
@@ -118,6 +140,7 @@ class CharactersViewModel @Inject constructor(
                 val response = repository.getEpisodesFromPagination(episodes.value!!.info.prev!!)
 
                 if (response != null) {
+                    database.episodeDao().insertMany(response.results)
                     getCharactersFromEpisodes(response.results)
                     _episodes.value = response
 
@@ -125,7 +148,7 @@ class CharactersViewModel @Inject constructor(
                 _loading.value = false
             }
         } catch (e: Exception) {
-        Log.e("Error", "$e")
+            Log.e("Error", "$e")
         }
     }
 
@@ -137,8 +160,9 @@ class CharactersViewModel @Inject constructor(
         _loading.value = true
         viewModelScope.launch {
             val response = repository.getEpisodesFromPagination(episodes.value!!.info.next!!)
-            _episodes.value = null;
+            _episodes.value = null
             if (response != null) {
+                database.episodeDao().insertMany(response.results)
                 getCharactersFromEpisodes(response.results)
                 _episodes.value = response
 
@@ -148,25 +172,37 @@ class CharactersViewModel @Inject constructor(
 
     }
 
+    fun searchEpisodes(name: String){
+        _loading.value = true
+        viewModelScope.launch {
+            val response = repository.searchEpisodesByName(name)
+            if (response != null) {
+                database.episodeDao().insertMany(response.results)
+                getCharactersFromEpisodes(response.results)
+                _episodes.value = response
+            }
+            _loading.value = false
+        }
+    }
+
     private suspend fun getCharactersFromEpisodes(episodes: List<Episode>) {
         val maxCharactersToFetch = 5
-        var counter = 0;
+        var counter: Int
         for (item in episodes) {
             item.charactersImages = mutableListOf()
-            counter = 0;
-            Log.e("Para", "${item.name}")
+            counter = 0
+
             for (char in item.characters) {
                 if (counter < maxCharactersToFetch) {
 
-                    Log.e("character", char)
+
                     val length = char.length
                     val id: Long =
                         char.subSequence(IntRange(length - 1, length - 1)).toString()
                             .toLong()
-                    Log.i("ID", "$id")
+
                     val characterDB: TvCharacter? = database.characterDao().getCharacter(id)
                     if (characterDB != null) {
-//                        Log.e("characterdb", "$characterDB")
                         item.charactersImages.add(requireNotNull(characterDB.image))
                     } else {
                         val character = repository.getCharacterFromFullURL(char)
@@ -195,6 +231,63 @@ class CharactersViewModel @Inject constructor(
             val response = repository.getLocations()
 
             if (response != null) {
+                database.locationDao().insertMany(response.results)
+                _locations.value = response
+
+            }
+            _loading.value = false
+        }
+    }
+
+    fun getLocationsNextPage() {
+
+        if (locations.value == null || locations.value!!.info.next == null) {
+
+            return
+        }
+        _loading.value = true
+        viewModelScope.launch {
+            val response = repository.getLocationsFromPagination(locations.value!!.info.next!!)
+            _locations.value = null
+            if (response != null) {
+                database.locationDao().insertMany(response.results)
+                _locations.value = response
+
+            }
+            _loading.value = false
+        }
+
+
+    }
+
+    fun getLocationsPreviousPage() {
+
+        if (locations.value == null || locations.value!!.info.prev == null) {
+
+            return
+        }
+        _loading.value = true
+        viewModelScope.launch {
+            val response = repository.getLocationsFromPagination(locations.value!!.info.next!!)
+            _locations.value = null
+            if (response != null) {
+                database.locationDao().insertMany(response.results)
+                _locations.value = response
+
+            }
+            _loading.value = false
+        }
+
+
+    }
+
+    fun searchLocations(name: String){
+        _loading.value = true
+        viewModelScope.launch {
+            val response = repository.searchLocationsByName(name)
+
+            if (response != null) {
+                database.locationDao().insertMany(response.results)
                 _locations.value = response
 
             }
