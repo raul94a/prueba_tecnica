@@ -268,7 +268,7 @@ class RickAndMortyViewModel @Inject constructor(
         }
         _loading.value = true
         viewModelScope.launch {
-            val response = repository.getLocationsFromPagination(locations.value!!.info.next!!)
+            val response = repository.getLocationsFromPagination(locations.value!!.info.prev!!)
             _locations.value = null
             if (response != null) {
                 database.locationDao().insertMany(response.results)
