@@ -25,7 +25,7 @@ class RickAndMortyViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-
+    var char : TvCharacter? = null
     private var _characters = MutableStateFlow<CharactersResponse?>(null)
     val characters: StateFlow<CharactersResponse?>
         get() = _characters
@@ -104,6 +104,7 @@ class RickAndMortyViewModel @Inject constructor(
         _loading.value = true
         viewModelScope.launch {
             val character = repository.getCharacterById(id)
+            char = character
             if (character != null) {
                 val episodes = character.episode
                 Log.e("Char episodes", "" + episodes)

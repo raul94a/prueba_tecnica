@@ -82,6 +82,7 @@ fun CharacterInformation(character: TvCharacter,navController: NavHostController
    
     val screenHeight = config.screenHeightDp.dp.times(1f)
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.clickable {
+
        navController.navigate("character/${character.id}")
     }) {
         AsyncImage(

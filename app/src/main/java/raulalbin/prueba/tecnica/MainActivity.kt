@@ -83,7 +83,7 @@ fun AppScaffold(navController: NavHostController, viewModel : RickAndMortyViewMo
     Scaffold(
         topBar = {
 
-            raulalbin.prueba.tecnica.ui.navigation.TabBarNavigation(selectedTabIndex) { index ->
+            raulalbin.prueba.tecnica.ui.navigation.TabBarNavigation(selectedTabIndex,viewModel) { index ->
                 selectedTabIndex = index
             }
         },

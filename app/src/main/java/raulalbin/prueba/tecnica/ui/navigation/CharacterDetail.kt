@@ -35,11 +35,10 @@ import raulalbin.prueba.tecnica.viewmodels.RickAndMortyViewModel
 
 @Composable
 
-fun CharacterDetail(id: String, vm: RickAndMortyViewModel = hiltViewModel()) {
+fun CharacterDetail(id: String, vm: RickAndMortyViewModel) {
 
-    Log.e("ID", "" + vm.characters.value)
-    val character: TvCharacter =
-        vm.characters.value!!.results.find { element -> element.id == id.toLong() }!!
+
+
     val loading = vm.loading.collectAsState().value
     val episodes = vm.characterEpisodes.collectAsState().value
     if (loading) {
@@ -48,6 +47,7 @@ fun CharacterDetail(id: String, vm: RickAndMortyViewModel = hiltViewModel()) {
         Text("Welcome to the detail")
 
     } else {
+        val character  = vm.char!!
         Column(
             modifier = Modifier.fillMaxWidth(1f).background(color= MainDarkBlue),
             horizontalAlignment = Alignment.CenterHorizontally

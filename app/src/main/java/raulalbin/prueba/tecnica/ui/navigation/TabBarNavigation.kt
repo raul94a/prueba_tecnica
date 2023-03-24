@@ -20,10 +20,9 @@ import raulalbin.prueba.tecnica.viewmodels.RickAndMortyViewModel
 
 
 @Composable
-fun TabBarNavigation(selectedTabIndex: Int, onClick: (index: Int) -> Unit) {
+fun TabBarNavigation(selectedTabIndex: Int, viewModel: RickAndMortyViewModel,onClick: (index: Int) -> Unit) {
     var query: String by rememberSaveable { mutableStateOf("") }
     val tabs = listOf("Characters", "Episodes", "Locations")
-    val viewModel : RickAndMortyViewModel = hiltViewModel()
     val boxColor = Color.hsl(230f, 0.34f, 0.17f)
 
     TopAppBar(
