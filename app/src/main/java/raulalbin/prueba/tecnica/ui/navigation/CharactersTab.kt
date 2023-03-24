@@ -7,15 +7,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import raulalbin.prueba.tecnica.ui.composables.Characters
 import raulalbin.prueba.tecnica.viewmodels.RickAndMortyViewModel
 
 @Composable
-fun CharactersTab() {
-    val viewModel: RickAndMortyViewModel = hiltViewModel()
+fun CharactersTab(navController: NavHostController, viewModel: RickAndMortyViewModel) {
     viewModel.getCharacters()
     val config = LocalConfiguration.current
     val screenHeight = config.screenHeightDp.dp.times(1f)
+
+
 
     Box(modifier = Modifier.height(screenHeight)) {
 
@@ -25,7 +27,7 @@ fun CharactersTab() {
                 .verticalScroll(enabled = true, state = rememberScrollState())
         ) {
 
-            Characters()
+            Characters(navController,viewModel)
             Spacer(modifier = Modifier.height(100.dp))
 
 

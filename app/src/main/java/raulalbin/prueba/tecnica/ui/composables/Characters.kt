@@ -1,4 +1,5 @@
 package raulalbin.prueba.tecnica.ui.composables
+import androidx.compose.foundation.clickable
 import raulalbin.prueba.tecnica.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,15 +18,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import raulalbin.prueba.tecnica.data.models.TvCharacter
+import raulalbin.prueba.tecnica.di.NavigationModule
 import raulalbin.prueba.tecnica.ui.theme.MainDarkBlue
 import raulalbin.prueba.tecnica.viewmodels.RickAndMortyViewModel
 
 
 @Composable
-fun Characters() {
-    val vm: RickAndMortyViewModel = hiltViewModel()
+fun Characters(navController: NavHostController, vm : RickAndMortyViewModel) {
     val state = vm.characters.collectAsState(initial = null).value
     val loading = vm.loading.collectAsState().value
     val config = LocalConfiguration.current
@@ -60,7 +63,7 @@ fun Characters() {
                     backgroundColor = MainDarkBlue
                     // modifier = Modifier.size(width = 100.dp, height = 100.dp)
                 ) {
-                    CharacterInformation(character = character)
+                    CharacterInformation(character = character, navController = navController)
                 }
             }
 
@@ -70,15 +73,19 @@ fun Characters() {
 }
 
 @Composable
-fun CharacterInformation(character: TvCharacter){
+fun CharacterInformation(character: TvCharacter,navController: NavHostController){
     val titleColor = Color.hsl(230f, 0.45f, 0.77f)
     val textColor = Color.White
     val titleSize = 17.sp
     val textSize = 15.sp
     val config = LocalConfiguration.current
+   
     val screenHeight = config.screenHeightDp.dp.times(1f)
-    Row(horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.clickable {
+       navController.navigate("character/${character.id}")
+    }) {
         AsyncImage(
+
             modifier = Modifier
                 .width(150.dp)
                 .height(height = screenHeight.times(0.3f)),

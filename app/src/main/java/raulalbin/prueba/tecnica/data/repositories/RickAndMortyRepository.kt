@@ -13,6 +13,13 @@ import javax.inject.Inject
 
 class RickAndMortyRepository @Inject constructor(private val api: RickAndMortyAPI){
 
+    suspend fun getCharacterById(id: String): TvCharacter? {
+        return withContext(Dispatchers.IO){
+            val response = api.getCharacter(id)
+            response.body()
+        }
+    }
+
     suspend fun getCharacters(): CharactersResponse? {
         return withContext(Dispatchers.IO){
             val response = api.getCharacters()
@@ -69,6 +76,15 @@ class RickAndMortyRepository @Inject constructor(private val api: RickAndMortyAP
             response.body()
         }
     }
+
+    suspend fun searchEpisodesFromList(episodes: List<String>): List<Episode>? {
+        return withContext(Dispatchers.IO){
+            val response = api.getEpisodesFromList(episodes)
+            response.body()
+        }
+    }
+
+
 
     suspend fun getLocations() : LocationsResponse? {
         return withContext(Dispatchers.IO) {

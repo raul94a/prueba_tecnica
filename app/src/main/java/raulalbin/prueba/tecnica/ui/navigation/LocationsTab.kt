@@ -12,9 +12,9 @@ import raulalbin.prueba.tecnica.ui.composables.Locations
 import raulalbin.prueba.tecnica.viewmodels.RickAndMortyViewModel
 
 @Composable
-fun LocationsTab() {
-    val viewModel: RickAndMortyViewModel = hiltViewModel()
-    viewModel.getLocations()
+fun LocationsTab( viewModel : RickAndMortyViewModel= hiltViewModel()) {
+
+
     val config = LocalConfiguration.current
     val screenHeight = config.screenHeightDp.dp.times(1f)
     Box(modifier = Modifier.height(screenHeight)) {

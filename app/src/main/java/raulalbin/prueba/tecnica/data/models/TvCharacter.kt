@@ -31,6 +31,9 @@ open class TvCharacter (
     var firstEpisode: Episode? = null
 
     @Ignore
+    var episodes: MutableList<Episode> = arrayListOf()
+
+    @Ignore
     lateinit var origin: Location
     @Ignore
     lateinit var location: Location

@@ -38,6 +38,9 @@ interface RickAndMortyAPI {
     @GET("episode/")
     suspend fun getEpisodesByName(@Query("name") name: String): Response<EpisodesResponse>
 
+    @GET("episode/{episodes}")
+    suspend fun getEpisodesFromList(@Path("episodes") episodes: List<String>) : Response<List<Episode>>
+
     @GET
     suspend fun getEpisodesPagination(@Url url: String): Response<EpisodesResponse>
 
