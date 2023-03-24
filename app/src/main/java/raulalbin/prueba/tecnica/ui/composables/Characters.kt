@@ -162,4 +162,5 @@ fun CharacterInformation(character: TvCharacter,navController: NavHostController
 
 
     }
+
 }

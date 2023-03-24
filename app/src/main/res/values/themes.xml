@@ -3,5 +3,7 @@
 
     <style name="Theme.PruebaTecnicaMCA" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/dark_blue</item>
+        <item name="android:navigationBarColor">@color/dark_blue</item>
+        <item name="android:navigationIcon">@color/white</item>
     </style>
 </resources>
